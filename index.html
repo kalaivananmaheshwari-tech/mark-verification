@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a237e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Mark Verification" />
+  <title>Mark Verification</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- OVERLAY for hamburger menu -->
+<div id="overlay" class="overlay hidden" onclick="closeMenu()"></div>
+
+<!-- HAMBURGER MENU SIDEBAR -->
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">MV</div>
+    <div class="sidebar-title">Mark Verification</div>
+    <button class="sidebar-close" onclick="closeMenu()">✕</button>
+  </div>
+  <ul class="sidebar-menu">
+    <li onclick="navigate('admin-login')">
+      <span class="menu-icon">🔐</span> Admin
+    </li>
+    <li onclick="navigate('user-subject')">
+      <span class="menu-icon">👤</span> User
+    </li>
+  </ul>
+  <div class="sidebar-footer">DGE Examination System</div>
+</nav>
+
+<!-- APP WRAPPER -->
+<div id="app">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="hamburger" onclick="openMenu()">
+      <span></span><span></span><span></span>
+    </button>
+    <h1 id="topbar-title" class="topbar-title">Mark Verification</h1>
+    <div class="topbar-spacer"></div>
+  </header>
+
+  <!-- SCREENS CONTAINER -->
+  <main id="screens">
+
+    <!-- SCREEN 1: HOME -->
+    <div id="screen-home" class="screen active">
+      <div class="home-hero">
+        <div class="home-badge">DGE Examination</div>
+        <div class="home-icon">📋</div>
+        <h2 class="home-title">Mark Verification</h2>
+        <p class="home-subtitle">Question-wise & Page-wise verification system for educational institutions</p>
+        <div class="home-cards">
+          <div class="home-card" onclick="navigate('admin-login')">
+            <div class="home-card-icon">🔐</div>
+            <div class="home-card-label">Admin</div>
+            <div class="home-card-desc">Configure subject formats</div>
+          </div>
+          <div class="home-card" onclick="navigate('user-subject')">
+            <div class="home-card-icon">👤</div>
+            <div class="home-card-label">User</div>
+            <div class="home-card-desc">Verify student marks</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: ADMIN LOGIN -->
+    <div id="screen-admin-login" class="screen">
+      <div class="screen-container">
+        <div class="screen-header">
+          <button class="back-btn" onclick="navigate('home')">← Back</button>
+          <h2>Admin Login</h2>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔐</div>
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="admin-username" placeholder="Enter username" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="password-wrap">
+              <input type="password" id="admin-password" placeholder="Enter password" />
+              <button class="eye-btn" onclick="togglePassword('admin-password', this)">👁️</button>
+            </div>
+          </div>
+          <div id="login-error" class="error-msg hidden">Invalid credentials. Please try again.</div>
+          <button class="btn-primary full-width" onclick="adminLogin()">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: SUBJECT FORMAT SETUP -->
+    <div id="screen-format-setup" class="screen">
+      <div class="screen-container">
+        <div class="screen-header">
+          <button class="back-btn" onclick="navigate('admin-login')">← Back</button>
+          <h2>Subject Format Setup</h2>
+        </div>
+
+        <!-- Part A: Subject Selection -->
+        <div class="card">
+          <h3 class="section-title">Part A: Subject Selection</h3>
+          <div class="form-group">
+            <label>Select Subject</label>
+            <div class="autocomplete-wrap">
+              <input type="text" id="format-subject-input" placeholder="Type to search subject..." oninput="filterSubjects(this.value)" autocomplete="off" />
+              <div id="subject-dropdown" class="subject-dropdown hidden"></div>
+            </div>
+            <div id="selected-subject-display" class="selected-tag hidden"></div>
+          </div>
+        </div>
+
+        <!-- Part B: Question Format -->
+        <div class="card" id="format-parts-card" style="display:none">
+          <h3 class="section-title">Part B: Question Format Entry</h3>
+          <div id="parts-container"></div>
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="addPart()">+ Add Part</button>
+            <button class="btn-danger" onclick="removePart()">− Remove Part</button>
+          </div>
+          <button class="btn-primary full-width mt-16" onclick="saveFormat()">💾 Save Format</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: USER SUBJECT SELECTION -->
+    <div id="screen-user-subject" class="screen">
+      <div class="screen-container">
+        <div class="screen-header">
+          <button class="back-btn" onclick="navigate('home')">← Back</button>
+          <h2>Select Subject</h2>
+        </div>
+        <div class="card">
+          <div class="card-icon">📚</div>
+          <p class="card-desc">Select a subject to begin mark verification</p>
+          <div class="form-group">
+            <label>Subject</label>
+            <select id="user-subject-select" class="select-field">
+              <option value="">-- Select Subject --</option>
+            </select>
+          </div>
+          <button class="btn-primary full-width mt-16" onclick="userSelectSubject()">Continue →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: QUESTION-WISE MARK ENTRY -->
+    <div id="screen-qwise" class="screen">
+      <div class="screen-container">
+        <div class="screen-header">
+          <button class="back-btn" onclick="navigate('user-subject')">← Back</button>
+          <h2 id="qwise-title">Question-wise Mark Entry</h2>
+        </div>
+        <div id="qwise-form"></div>
+        <div class="total-bar sticky-bottom">
+          <span>Question-wise Total</span>
+          <input type="text" id="qwise-total" class="total-input" disabled value="0.00" />
+        </div>
+        <div class="card mt-8">
+          <button class="btn-primary full-width" onclick="navigate('pwise')">Page-wise Total →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 6: PAGE-WISE MARK ENTRY -->
+    <div id="screen-pwise" class="screen">
+      <div class="screen-container">
+        <div class="screen-header">
+          <button class="back-btn" onclick="navigate('qwise')">← Back</button>
+          <h2 id="pwise-title">Page-wise Mark Entry</h2>
+        </div>
+        <div class="card">
+          <p class="card-desc">Enter marks for each page (Pages 1–70)</p>
+          <div id="page-grid" class="page-grid"></div>
+        </div>
+        <div class="total-bar sticky-bottom">
+          <span>Page-wise Total</span>
+          <input type="text" id="pwise-total" class="total-input" disabled value="0.00" />
+        </div>
+        <div class="card mt-8">
+          <button class="btn-success full-width" onclick="verifyTotals()">✅ Verify Totals</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div id="modal-box" class="modal-box">
+    <div id="modal-icon" class="modal-icon"></div>
+    <div id="modal-title" class="modal-title"></div>
+    <div id="modal-message" class="modal-message"></div>
+    <div id="modal-buttons" class="modal-buttons"></div>
+  </div>
+</div>
+
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
